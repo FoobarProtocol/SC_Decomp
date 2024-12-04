@@ -18,7 +18,7 @@ import requests
 # from flask_sslify import SSLify
 
 
-port = 5001
+port = 5000
 app = Flask(__name__)
 CORS(app)
 # sslify = SSLify(app)
@@ -67,7 +67,7 @@ def Deploy():
         code_cmd = "python pychain/app.py"
         r = subprocess.run(args=code_cmd, shell=True, encoding='utf-8', stdout=PIPE)
         print(r.stdout)
-        return "http://127.0.0.1:5001/PromptSapper"
+        return "http://127.0.0.1:5000/PromptSapper"
 
 @app.route('/download',methods = ['POST'])
 def download():
@@ -256,4 +256,4 @@ if __name__ == '__main__':
     # app.run(processes=True,debug=False,port=5000,ssl_context=('fullchain.pem', 'privkey.key'),host='0.0.0.0')
     # gevent_server = gevent.pywsgi.WSGIServer(('0.0.0.0', 5000),app)
     # gevent_server.serve_forever()
-    app.run(debug=True)
+    app.run(debug=False)
