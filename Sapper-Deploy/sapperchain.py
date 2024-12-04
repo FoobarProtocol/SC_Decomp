@@ -58,9 +58,9 @@ class sapperchain:
             )
             image_url = response['data'][0]['url']
             return image_url
-        if (model["engine"].replace(" ", "") == "gpt-3.5-turbo"):
+        if (model["engine"].replace(" ", "") == "gpt-4o-mini"):
             response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o-mini",
                 messages=[
                     {"role": "user", "content": ready_prompt}
                 ]

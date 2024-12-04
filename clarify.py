@@ -1,31 +1,48 @@
 import openai
 
-def program_Generate(prompt, num_candidates=1, max_tokens=1024, stop=None, temperature=0):
+def program_Generate(prompt, num_candidates=1, max_tokens=3630, temperature=1):
+    import openai
+
+    # Set the API key once, assuming `OpenaiKey` is defined globally or passed securely.
+    openai.api_key = OpenaiKey
+
+    # Validate the max_tokens to avoid exceeding model limits.
+    if max_tokens > 4096:  # Example limit for some GPT models; adjust as needed.
+        raise ValueError("max_tokens exceeds model limit. Please adjust.")
+
     results = []
     try:
-        response = openai.Completion.create(
-            prompt=prompt,
-            model="text-davinci-003",
+        # Make the ChatCompletion API call.
+        response = openai.ChatCompletion.create(
+            model="gpt-4",  # Ensure the model name is correct.
+            messages=[{"role": "user", "content": prompt}],
             max_tokens=max_tokens,
-            stop=stop,
             temperature=temperature,
             n=num_candidates
         )
-        for choice in response.choices:
-            text = choice.text.strip()
-            print(text)
-            results.append(text.split(". You")[0])
+        # Parse responses.
+        for choice in response.get("choices", []):
+            text = choice.get("message", {}).get("content", "").strip()
+            if text:
+                print(text)  # Debug/console log
+                results.append(text)  # Full response instead of truncation
+    except openai.error.InvalidRequestError as e:
+        print(f"Invalid request error: {e}")
+        return []
+    except openai.error.OpenAIError as e:
+        print(f"General OpenAI API error: {e}")
+        return []
     except Exception as e:
-        print(type(e), e)
-        if str(type(e)) == "<class 'openai.error.InvalidRequestError'>":
-            response = "null"
+        print(f"Unexpected error: {e}")
+        return []
+
     return results
 
 
 question_prompt = """
-Context: A user is interacting with a large language model.  They are crafting prompts and giving them to the LLM in order to get the model to complete a task or generate output.
-Instruction: In order for a large language model to better complete tasks or generate outputs, need to ask a question about the task and let users reply.
-The questions asked can be combined with the previously obtained Key Requirements, User Preference, and Implementing Consideration to make users more clear about their needs.
+Context: A user is interacting with a large language model designed to assist with smart contract development. This model provides comprehensive information on Solidity programming concepts, best practices, and tools. It offers step-by-step guidance on writing smart contracts, testing and debugging them, and deploying them on the Ethereum blockchain. The instructions and resources are tailored to the individual needs and goals of the user, ensuring a smooth transition into smart contract development.
+Instruction: In order for a large language model to better complete tasks or generate outputs, the quality and accuracy of the outputs are profoundly influenced by the depth of understanding that the model achieves regarding the task. To ensure comprehensive understanding and to leave no stone unturned, it is imperative that the model engages in a continuous process of asking follow-up questions. This iterative approach is essential for capturing every single facet of the project, thereby enhancing the precision and relevance of the generated outputs.
+The questions asked can be combined with the previously obtained (a) Key Requirements, (b)User Preference, and (c) Implementing Consideration to make users more clear about their needs.
 {{User_Behaviour}}
 The questions asked need to lead users to clarification of requirements and conform to strategies for interacting with LLM.
 
@@ -38,30 +55,191 @@ Please give requirement guidance for the following functional requirement based 
 """
 
 question_prompt2 = """
-Context: A user is interacting with a large language model. They are crafting prompts and giving them to the LLM in order to get the model to complete a task or generate output.
-You are a product manager AI tasked with focusing on users' requirements and understanding them through deep communication.
-You need to provide a question about the users' requirements and let users reply.
-The question raised can be referred to the user's task notes：
+**Context:**
+A user is interacting with a large language model (LLM), aiming to craft well-structured prompts that guide the model to perform specific tasks or generate desired outputs. These prompts act as instructions that align the response of the model with user expectations. As the LLM evolves in its capabilities, the quality and precision of prompts play a critical role in shaping the outputs effectively.
+You are a **Product Manager AI** designed to deeply understand user requirements by facilitating comprehensive and insightful communication. Your primary goal is to elicit the user's underlying needs, ensuring clarity and alignment between the user's intent and the output generated by the LLM. This involves analyzing user tasks, considering their context, and providing tailored guidance to refine their functional requirements into actionable inputs.
+
+---
+
+**Role-Specific Objective:**
+You must focus on developing a meaningful dialogue to understand user goals thoroughly. This entails:
+- Probing their requirements with clarity and specificity.
+- Anticipating potential ambiguities or gaps in the stated objectives of the user.
+- Offering examples, explanations, and scenarios to help refine their ideas.
+- Considering factors that influence the task of the user, including technical, aesthetic, and functional dimensions.
+
+---
+
+**Task-Specific Scenario:**
+The user expresses a need for developing a smart contract that operates efficiently and securely on the Ethereum blockchain. This task requires a comprehensive understanding of Solidity programming concepts and best practices. You are tasked with assisting the user in refining their smart contract development process by breaking down their functional requirements and guiding them toward actionable implementation plans. Provide step-by-step guidance on writing, testing, debugging, and deploying smart contracts, ensuring the instructions are tailored to the user's individual needs and goals.
+
+---
+
+**Examples of Requirement Guidance:**
+
+1. **Functional Requirement:** "Develop a secure and gas-efficient ERC-20 token smart contract."
+   **Guidance:**
+   - **Design Considerations:** Should the token have additional features, such as minting, burning, or pausing functionality?
+   - **Technical Factors:** Determine the gas optimization strategies, such as using `unchecked` blocks where appropriate or implementing minimal state changes.
+   - **Security:** Include standard safety checks like overflow protection and role-based access controls (e.g., using OpenZeppelin's libraries).
+
+   **Example Answer:**
+   - Use the OpenZeppelin ERC-20 implementation as a base.
+   - Add minting and burning functionality with proper access control using `Ownable`.
+   - Optimize functions for minimal gas usage by reducing storage writes.
+
+2. **Functional Requirement:** "Create a decentralized voting contract for a DAO."
+   **Guidance:**
+   - **Design Choices:** Should votes be weighted based on token holdings, or should every participant have equal voting power?
+   - **Security:** Consider how to prevent vote tampering, replay attacks, and ensure verifiable results using cryptographic techniques.
+   - **Technical Factors:** Incorporate time-sensitive logic for voting deadlines and results finalization.
+
+   **Example Answer:**
+   - Implement weighted voting based on token holdings.
+   - Use the Solidity `keccak256` function for cryptographic verification of votes.
+   - Include `block.timestamp` constraints to enforce voting periods.
+
+3. **Functional Requirement:** "Enable upgradeability for a smart contract system."
+   **Guidance:**
+   - **Design Considerations:** Use a proxy pattern to enable modular upgrades. Should it be transparent or UUPS proxy?
+   - **Technical Factors:** Evaluate storage slot alignment to prevent corruption during upgrades.
+   - **Security:** Implement access control to restrict upgrade functionality to trusted roles only.
+
+   **Example Answer:**
+   - Use the OpenZeppelin transparent proxy implementation.
+   - Clearly define storage variables and avoid overwriting storage slots.
+   - Restrict upgrades to an `Admin` role using `AccessControl`.
+
+---
+
+**Requirement Analysis Framework:**
+To create more precise and effective requirements for smart contract development, consider the following dimensions:
+
+1. **Functional Scope:**
+   - What functionality should the smart contract support? Examples include token management, governance, oracles, and DeFi integration.
+   - How does the smart contract interact with other on-chain and off-chain systems?
+
+2. **Technical Design:**
+   - Which standards (e.g., ERC-20, ERC-721, ERC-1155) or custom architecture should the smart contract adhere to?
+   - What are the gas efficiency strategies and storage optimization techniques required?
+
+3. **Security Measures:**
+   - Identify potential vulnerabilities, such as reentrancy attacks or unchecked external calls.
+   - Use established libraries like OpenZeppelin to incorporate best practices.
+
+4. **Testing and Debugging:**
+   - Define unit tests, integration tests, and stress tests to validate functionality.
+   - Use tools like Hardhat, Truffle, and Foundry for testing and debugging.
+
+5. **Deployment and Maintenance:**
+   - Determine deployment conditions, such as Ethereum network selection (mainnet or testnets like Goerli).
+   - Plan for upgradeability and long-term maintenance through modular design and proxy patterns.
+
+---
+
+**User Behavior Note:**
 {{User_Behaviour}}
-The question should be well in line with user requirements and usage scenarios.
 
-Functional requirement: I want to develop a service that automatically draws according to the weather.
-Requirement guidance: You need to consider what goes into the design. For example, which colors to use for painting, canvas size, canvas type, etc.
-Answer: Draw 500x500 pixel RGB color pictures.
-Requirement guidance: You need to specify some conditions. For example, paint automatically only on rainy or sunny days.
-Answer: Abstract pictures when the weather is rainy and nature landscapes when the weather is sunny.
-Please give requirement guidance for the following functional requirement based on the above form.
+---
+
+**Your Role:**
+Craft a thoughtful, context-aware question that aligns with the user's requirements in smart contract development, deepens their understanding of Solidity programming concepts, and clarifies their goals. The question should not merely repeat previous queries but instead drive the user toward more refined and actionable input related to writing, testing, debugging, and deploying smart contracts on the Ethereum blockchain. Provide clear, focused guidance that incorporates technical best practices and tools, ensuring the user feels supported and empowered to articulate their needs effectively in the context of smart contract development.
+
+---
+
+**Example Question:**
+"To ensure the Ethereum smart contract meets your expectations, could you clarify the type of contract architecture you're envisioning (e.g., ERC-20, ERC-721, or custom functionality) and the technical requirements (e.g., compatibility with existing DeFi protocols, modular upgradeability, and efficiency in gas usage)? Furthermore, would you prefer a set of predefined functions for certain use cases, or should the contract include dynamic logic capable of adapting to external blockchain or off-chain data inputs?"
 """
-def generate_query_expansion(Behaviour, query, OpenAIKey):
-    openai.api_key = "OpenAIKey"
-    # TODO figure out alternative stopping criterion for generating initial characters?
-    question_prompt1 = question_prompt + query + 'Requirement guidance:'
-    question_prompt1 = question_prompt1.replace("{{User_Behaviour}}", Behaviour)
-    expansion = program_Generate(prompt=question_prompt1, temperature=0.3, max_tokens=48, num_candidates=1, stop='\n')[0]
-    if "Requirement guidance:" in query:
-        query = query + "\nWrite the Functional requirement in detail according to the Requirement guidance and Answer above\nFunctional Requirement:"
-        expansion1 = program_Generate(prompt=query, num_candidates=1, max_tokens=256, temperature=0.3)[0]
-    else:
-        expansion1 = query.replace("Functional requirement:", "")
+# def generate_query_expansion(Behaviour, query, OpenAIKey):
+#     openai.api_key = "OpenAIKey"
+#     # TODO figure out alternative stopping criterion for generating initial characters?
+#     question_prompt1 = question_prompt + query + 'Requirement guidance:'
+#     question_prompt1 = question_prompt1.replace("{{User_Behaviour}}", Behaviour)
+#     expansion = program_Generate(prompt=question_prompt1, temperature=0.3, max_tokens=3800, num_candidates=1, stop='\n')
+#     if not expansion:
+#         return "No expansion generated.", ""
+#     expansion = expansion[0]
+#     if "Requirement guidance:" in query:
+#         query = query + "\nWrite the Functional requirement in detail according to the Requirement guidance and Answer above\nFunctional Requirement:"
+#         expansion1 = program_Generate(prompt=query, num_candidates=1, max_tokens=2500, temperature=0.3)
+#         if not expansion1:
+#             return expansion, ""
+#         expansion1 = expansion1[0]
+#     else:
+#         expansion1 = query.replace("Functional requirement:", "")
 
-    return expansion, expansion1
+#     return expansion, expansion1
+
+def generate_query_expansion(behaviour, query, openai_key, question_prompt_template=None):
+    import openai
+    from typing import Tuple, Optional
+
+    def validate_openai_key(key: str) -> bool:
+        return bool(key and isinstance(key, str) and len(key.strip()) > 0)
+
+    def safe_extract(response: Optional[list]) -> Optional[str]:
+        if response and isinstance(response, list) and len(response) > 0:
+            return response[0]
+        return None
+
+    if not validate_openai_key(openai_key):
+        raise ValueError("Invalid OpenAI API key provided.")
+
+    openai.api_key = openai_key
+
+    question_prompt = question_prompt_template or "Expand the following query based on user behavior and provide requirement guidance:\n"
+
+    question_prompt1 = f"{question_prompt}{query}\nRequirement guidance:"
+    question_prompt1 = question_prompt1.replace("{{User_Behaviour}}", behaviour)
+
+    try:
+        expansion = program_Generate(
+            prompt=question_prompt1,
+            temperature=0.3,
+            max_tokens=3800,
+            num_candidates=1
+        )
+        expansion = safe_extract(expansion)
+        if not expansion:
+            return "No expansion generated.", ""
+
+        if "Requirement guidance:" in query:
+            functional_req_prompt = (
+                f"{query}\nWrite the Functional requirement in detail according to the Requirement guidance and Answer above.\n"
+                "Functional Requirement:"
+            )
+            expansion1 = program_Generate(
+                prompt=functional_req_prompt,
+                num_candidates=1,
+                max_tokens=2500,
+                temperature=0.3
+            )
+            expansion1 = safe_extract(expansion1)
+            if not expansion1:
+                return expansion, ""
+        else:
+            expansion1 = query.replace("Functional requirement:", "").strip()
+
+        return expansion, expansion1
+
+    except openai.error.InvalidRequestError as e:
+        print(f"Invalid request error: {e}")
+        return f"Error in query expansion: {e}", ""
+    except openai.error.AuthenticationError as e:
+        print(f"Authentication error: {e}")
+        return "OpenAI API authentication failed.", ""
+    except openai.error.APIConnectionError as e:
+        print(f"API connection error: {e}")
+        return "Failed to connect to OpenAI API.", ""
+    except openai.error.RateLimitError as e:
+        print(f"Rate limit error: {e}")
+        return "OpenAI API rate limit exceeded.", ""
+    except openai.error.ServiceUnavailableError as e:
+        print(f"Service unavailable error: {e}")
+        return "OpenAI API service is currently unavailable.", ""
+    except openai.error.OpenAIError as e:
+        print(f"OpenAI API error: {e}")
+        return f"Unexpected OpenAI API error: {e}", ""
+    except Exception as e:
+        print(f"Unexpected error: {type(e).__name__}: {e}")
+        return f"An unexpected error occurred: {type(e).__name__}", ""

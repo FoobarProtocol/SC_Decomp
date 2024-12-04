@@ -95,7 +95,7 @@ def Chatbot(request):
             savequery(query)
             return {'Answer': query["output"]}
         if query["runflag"]:
-            chatbot = chain.worker("T}ojRf(E+G5adzGNmnQV",[history,human],{"temperature":0.7,"max_tokens":225,"top_p":1,"frequency_penalty":0,"presence_penalty":0,"engine":" gpt-3.5-turbo"})
+            chatbot = chain.worker("T}ojRf(E+G5adzGNmnQV",[history,human],{"temperature":0.7,"max_tokens":225,"top_p":1,"frequency_penalty":0,"presence_penalty":0,"engine":" gpt-4o-mini"})
             query["chatbot"]=chatbot
         if query["runflag"]:
             query["output"].append(chatbot)
