@@ -81,7 +81,7 @@ def AirSim(sapper_request):
     preInfo=sapper_query["preInfo"]
     sapper_query["output"] = []
     if sapper_query["runflag"]:
-        preInfo = """Hi there! I'm an AI assistant that can help you use the AirSim simulator for drones. To get started, you will need to input take off."""
+        preInfo = """Hi there! I'm an AI assistant that can help you program and code Smart Contracts. You can get started by asking me anything related to this discipline."""
         sapper_query["preInfo"]=preInfo
     if sapper_query["runflag"]:
         sapper_query["output"].append(preInfo)
@@ -94,7 +94,7 @@ def AirSim(sapper_request):
             savequery(sapper_query)
             return {'Answer': sapper_query["output"]}
         if sapper_query["runflag"]:
-            chatbot = chain.worker("{0kH/PQQW;J^6,(HkAH^",[history,human],{"temperature":0.7,"max_tokens":225,"top_p":1,"frequency_penalty":0,"presence_penalty":0,"model":"g","engine":" gpt-3.5-turbo"})
+            chatbot = chain.worker("{0kH/PQQW;J^6,(HkAH^",[history,human],{"temperature":0.7,"max_tokens":2250,"top_p":1,"frequency_penalty":0,"presence_penalty":0,"model":"g","engine":" gpt-4o-mini"})
             sapper_query["chatbot"]=chatbot
         if sapper_query["runflag"]:
             sapper_query["output"].append(chatbot)

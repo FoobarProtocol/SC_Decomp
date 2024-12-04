@@ -97,7 +97,7 @@ def sapper(sapper_request):
     preInfo=sapper_query["preInfo"]
     sapper_query["output"] = []
     if sapper_query["runflag"]:
-        preInfo = """Hello, welcome to the Job Assistant AI. Our AI can not only answer your job-related questions, but also provide you with simulated interview services, offering you an integrated job search experience. Please enter 'Hello' to activate me."""
+        preInfo = """Hello, welcome to the Smart Contract Tutor. You can ask me any questions about smart contracts and blockchain. I can help you understand any and all concepts under the umbrella of smart contracts and blockchain. If you want to learn anythign about coding - from difficult concepts to simple ones - I can help you. I can also curate lessons for you on the spot, grade papers, assess how well you are at writing code, and much more."""
         sapper_query["preInfo"]=preInfo
     if sapper_query["runflag"]:
         sapper_query["output"].append(preInfo)
@@ -108,7 +108,7 @@ def sapper(sapper_request):
         sapper_query["input"] = "Empty"
         savequery(sapper_query)
         return {'Answer': sapper_query["output"]}
-    start = 'Dear users, welcome to use Sixiaopin. Please enter 1 for mock interview or 2 for other job search functions such as resume aid';
+    start = 'Dear users, welcome to use Sixiaopin. Please enter 1 for me to be in guru mode where I help you understand any and all concepts under the umbrella of smart contracts and blockchain. Please enter 2 for me to be in student mode where I help you with any questions you may have under the field of smart contracts and blockchain.';
     if sapper_query["runflag"]:
         sapper_query["output"].append(start)
     stop, sapper_query, option = get_value("option", sapper_request, sapper_query)
@@ -118,7 +118,7 @@ def sapper(sapper_request):
         savequery(sapper_query)
         return {'Answer': sapper_query["output"]}
     if option == '1':
-        chatbot = 'Welcome to the Simulated Interview Service of Si Xiao Pin! Please enter your interview scenario and your personal experience below.';
+        chatbot = 'Welcome to the Simulated Professor student to Professor experience. Here you will have the opportunity to ask me anything you want under the field of smart contracts and blockchain. I am here to help you with any questions you may have. Let us begin our conversation. Please enter "Bye" to end the conversation.';
         if sapper_query["runflag"]:
             sapper_query["output"].append(chatbot)
         stop, sapper_query, Scene = get_value("Scene", sapper_request, sapper_query)
@@ -129,12 +129,12 @@ def sapper(sapper_request):
             return {'Answer': sapper_query["output"]}
         while Answer != 'Bye':
             if sapper_query["runflag"]:
-                Question = chain.worker("cfMm_^CqC=qE;:%QcQQ0",[history_1,Scene],{"temperature":0.7,"max_tokens":861,"stop_strs":"","top_p":1,"frequency_penalty":0,"presence_penalty":0,"engine":" text-davinci-003"})
+                Question = chain.worker("cfMm_^CqC=qE;:%QcQQ0",[history_1,Scene],{"temperature":0.7,"max_tokens":861,"stop_strs":"","top_p":1,"frequency_penalty":0,"presence_penalty":0,"engine":" gpt-4o-mini"})
                 sapper_query["Question"]=Question
             if sapper_query["runflag"]:
                 sapper_query["output"].append(Question)
             if sapper_query["runflag"]:
-                history_1 = chain.worker("Q$V+u{Y]P%SZP``Uq(FN",[history_1,Question],{"temperature":0.7,"max_tokens":861,"stop_strs":"","top_p":1,"frequency_penalty":0,"presence_penalty":0,"engine":" text-davinci-003"})
+                history_1 = chain.worker("Q$V+u{Y]P%SZP``Uq(FN",[history_1,Question],{"temperature":0.7,"max_tokens":861,"stop_strs":"","top_p":1,"frequency_penalty":0,"presence_penalty":0,"engine":" gpt-4o-mini"})
                 sapper_query["history_1"]=history_1
             stop, sapper_query, Answer = get_value("Answer", sapper_request, sapper_query)
             if stop and sapper_query["runflag"]:
@@ -144,12 +144,12 @@ def sapper(sapper_request):
                 return {'Answer': sapper_query["output"]}
             if Answer != 'Bye':
                 if sapper_query["runflag"]:
-                    Standard_Answer = chain.worker("kRan_$l+VgL_*DGf;QKV",[Question],{"temperature":0.7,"max_tokens":2048,"top_p":1,"frequency_penalty":0,"presence_penalty":0,"engine":" gpt-3.5-turbo"})
+                    Standard_Answer = chain.worker("kRan_$l+VgL_*DGf;QKV",[Question],{"temperature":0.7,"max_tokens":2048,"top_p":1,"frequency_penalty":0,"presence_penalty":0,"engine":" gpt-4o-mini"})
                     sapper_query["Standard_Answer"]=Standard_Answer
                 if sapper_query["runflag"]:
                     sapper_query["output"].append(Standard_Answer)
                 if sapper_query["runflag"]:
-                    Evaluation = chain.worker("@F-Q?_/`-Jh,T7E28Y3@",[Scene,Question,Answer,Standard_Answer],{"temperature":0.7,"max_tokens":2048,"top_p":1,"frequency_penalty":0,"presence_penalty":0,"model":"g","engine":" gpt-3.5-turbo"})
+                    Evaluation = chain.worker("@F-Q?_/`-Jh,T7E28Y3@",[Scene,Question,Answer,Standard_Answer],{"temperature":0.7,"max_tokens":2848,"top_p":0.8,"frequency_penalty":0,"presence_penalty":0,"model":"g","engine":" gpt-3.4o-mini"})
                     sapper_query["Evaluation"]=Evaluation
                 if sapper_query["runflag"]:
                     sapper_query["output"].append(Evaluation)
@@ -162,8 +162,8 @@ def sapper(sapper_request):
                 chatbot = 'Thank you for using Sixiaopin! Good luck in your job search!';
                 if sapper_query["runflag"]:
                     sapper_query["output"].append(chatbot)
-            
-        
+
+
     elif option == '2':
         chatbot = 'Please enter your target occupation:';
         if sapper_query["runflag"]:
@@ -241,7 +241,7 @@ def sapper(sapper_request):
                                 savequery(sapper_query)
                                 return {'Answer': sapper_query["output"]}
                             if sapper_query["runflag"]:
-                                First_Improvement = chain.worker("PO596X1|.Q_4uocH#ko*",[First_Improvement,Advice],{"temperature":0.7,"max_tokens":2048,"top_p":1,"frequency_penalty":0,"presence_penalty":0,"engine":" gpt-3.5-turbo"})
+                                First_Improvement = chain.worker("PO596X1|.Q_4uocH#ko*",[First_Improvement,Advice],{"temperature":0.7,"max_tokens":2048,"top_p":1,"frequency_penalty":0,"presence_penalty":0,"engine":" gpt-4o-mini"})
                                 sapper_query["First_Improvement"]=First_Improvement
                             if sapper_query["runflag"]:
                                 sapper_query["output"].append(First_Improvement)
@@ -254,22 +254,22 @@ def sapper(sapper_request):
                                 sapper_query["input"] = "Judge"
                                 savequery(sapper_query)
                                 return {'Answer': sapper_query["output"]}
-                        
-                    
+
+
                     if Judge == 'B':
                         chatbot = 'Thank you very much for your feedback. I am happy to help you. Please let me know if you need anything else';
                         if sapper_query["runflag"]:
                             sapper_query["output"].append(chatbot)
-                    
+
                 elif Judge == 'B':
                     chatbot = 'Thank you very much for your feedback. I am happy to help you. Please let me know if you need anything else';
                     if sapper_query["runflag"]:
                         sapper_query["output"].append(chatbot)
-                
-            
-        
-    
-    
+
+
+
+
+
 
 
     resetquery(sapper_query, initrecord)

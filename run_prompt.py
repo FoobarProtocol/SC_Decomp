@@ -57,10 +57,10 @@ def run_Function(promptvalue, prenunits ,model,OpenAIKey,debugvalue):
             return {'message': image_url, 'type': 'image'}
         for key in model:
             Config.add_to_config(key, model[key])
-        if(model["engine"].replace(" ","")=="gpt-3.5-turbo"):
+        if(model["engine"].replace(" ","")=="gpt-4o"):
             # Note: you need to be using OpenAI Python v0.27.0 for the code below to work
             response=openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o",
                 messages=[
                     {"role": "user", "content": ready_prompt}
                 ],
@@ -108,4 +108,3 @@ def run_PythonREPL(promptvalue, prenunits ,model,debugvalue):
         return {'message': output, 'type': 'text'}
     except Exception as e:
         return {'error': str(e), 'type': 'text'}
-

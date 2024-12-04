@@ -1,12 +1,12 @@
 class Config():
     def __init__(self):
-        self.temperature = 0
-        self.engine = "code-davinci-002"
+        self.temperature = 1
+        self.engine = "gpt-4o-mini"
         self.n = 1
         self.top_p = 1
         self.frequency_penalty = 0
         self.presence_penalty = 0
-        self.max_tokens = 256
+        self.max_tokens = 2048
         self.stop_strs = ""
         self.prompt = ""
     def add_to_config(self, param, value):
@@ -28,4 +28,3 @@ class Config():
             self.stop_strs = value
         elif param == "prompt":
             self.prompt = value
-

@@ -129,9 +129,9 @@ def Explore():
         explore.prompt = data['message']
         # Call chatbot
         response = explore.chatbot()
-        explore.prompt.append({"role": response["role"], "content": response["content"]})
+        explore.prompt.append({"role": response.role, "content": response.content})
         pre_design = explore.pre_design_view()
-        return json.dumps({'Answer':{"role": response["role"], "content": response["content"]}, 'Design': pre_design})
+        return json.dumps({'Answer':{"role": response.role, "content": response.content}, 'Design': pre_design})
 
 @app.route('/Decompose',methods = ['POST','GET'])
 def Decompose():
@@ -243,17 +243,17 @@ def modern_interface():
 def chat():
     data = request.get_json()
     message = data.get('message', '')
-    
+
     # Here you can integrate with your existing backend logic
     # For now, we'll just echo back a response
     response = {
         'response': f"You said: {message}"
     }
-    
+
     return jsonify(response)
 
 if __name__ == '__main__':
     # app.run(processes=True,debug=False,port=5000,ssl_context=('fullchain.pem', 'privkey.key'),host='0.0.0.0')
     # gevent_server = gevent.pywsgi.WSGIServer(('0.0.0.0', 5000),app)
     # gevent_server.serve_forever()
-    app.run(debug=False)
+    app.run(debug=True)
