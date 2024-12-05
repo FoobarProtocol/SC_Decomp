@@ -45,14 +45,14 @@ app.listen(3333, function (){
 async function openaiConnection(prompt){
     const { Configuration, OpenAIApi } = require("openai");
     const configuration = new Configuration({
-        organization: 'org-L4Y94uCZ2IKjOipmkW2HEAsj',
-        apiKey: process.env.Openai_APIKey,
+      organization: "org-XdyiIl8ofyaWlCZ45r5NG8r7",
+      apiKey: process.env.Openai_APIKey,
     });
     const openai = new OpenAIApi(configuration);
     return await openai.createCompletion({
-        model: "text-davinci-003",
+        model: "gpt-4o-mini",
         prompt: prompt,
         max_tokens: 2000,
-        stream: false
+        stream: true
     });
 }
