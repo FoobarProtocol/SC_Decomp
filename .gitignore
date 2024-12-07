@@ -1,0 +1,25 @@
+brother
+__pycache__
+myenv
+# System files
+.DS_Store
+
+# Python cache
+__pycache__/
+.pytest_cache/
+
+# Environment directories
+myenv/
+
+# IDE-specific settings
+.idea/
+
+# Temporary or generated files
+*.sig
+TODO
+test_csvsplitter.py
+testitout.py
+codium_*
+
+# Local directories
+brother/
