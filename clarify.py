@@ -5,11 +5,8 @@ OpenaiKey = os.getenv("OPENAI_API_KEY")
 
 
 def program_Generate(prompt, num_candidates=1, max_tokens=3630, temperature=1):
-    #    import openai
-
     # Set the API key once, assuming `OpenaiKey` is defined globally or passed securely.
-    #    openai.api_key = OpenaiKey
-    openai.api_key = OpenaiKey
+    client = openai.OpenAI(api_key=OpenaiKey)
 
     # Validate the max_tokens to avoid exceeding model limits.
     if max_tokens > 4096:  # Example limit for some GPT models; adjust as needed.
@@ -17,20 +14,21 @@ def program_Generate(prompt, num_candidates=1, max_tokens=3630, temperature=1):
 
     results = []
     try:
-        # Make the ChatCompletion API call.
-        response = openai.ChatCompletion.create(
-            model="o1-preview",  # Ensure the model name is correct.
+        # Make the ChatCompletion API call with new client syntax
+        response = client.chat.completions.create(
+            model="gpt-4",  # or your preferred model
             messages=[{"role": "user", "content": prompt}],
             max_tokens=max_tokens,
             temperature=temperature,
             n=num_candidates,
         )
-        # Parse responses.
-        for choice in response.get("choices", []):
-            text = choice.get("message", {}).get("content", "").strip()
+
+        # Parse responses with new response structure
+        for choice in response.choices:
+            text = choice.message.content.strip()
             if text:
                 print(text)  # Debug/console log
-                results.append(text)  # Full response instead of truncation
+                results.append(text)
         return results
 
     except openai.BadRequestError as e:
