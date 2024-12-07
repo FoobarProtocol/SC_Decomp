@@ -2,13 +2,13 @@ import openai
 import os
 
 
-def program_Classifier(prompt, max_tokens=256, stop=None, temperature=0):
+def program_Classifier(prompt, max_tokens=1024, stop=None, temperature=0):
     client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     response = None
     while response is None:
         try:
             response = client.completions.create(
-                model="got-4o",
+                model="got-4o-mini",
                 prompt=prompt,
                 max_tokens=max_tokens,
                 stop=stop,
