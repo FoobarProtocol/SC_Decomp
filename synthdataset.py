@@ -4,7 +4,8 @@ import datetime
 import json
 
 # set up OpenAI API key
-openai.api_key = "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"
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 
 # set up prompt for GPT-3
 prompt = "Synthetic dataset: Here is an example of a synthetic dataset for a machine learning model that predicts whether a customer will churn or not.\n\n"

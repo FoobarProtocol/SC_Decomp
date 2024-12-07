@@ -1,9 +1,14 @@
 import openai
+import os
+
+OpenaiKey = os.getenv("OPENAI_API_KEY")
+
 
 def program_Generate(prompt, num_candidates=1, max_tokens=3630, temperature=1):
-    import openai
+    #    import openai
 
     # Set the API key once, assuming `OpenaiKey` is defined globally or passed securely.
+    #    openai.api_key = OpenaiKey
     openai.api_key = OpenaiKey
 
     # Validate the max_tokens to avoid exceeding model limits.
@@ -14,11 +19,11 @@ def program_Generate(prompt, num_candidates=1, max_tokens=3630, temperature=1):
     try:
         # Make the ChatCompletion API call.
         response = openai.ChatCompletion.create(
-            model="gpt-4",  # Ensure the model name is correct.
+            model="o1-preview",  # Ensure the model name is correct.
             messages=[{"role": "user", "content": prompt}],
             max_tokens=max_tokens,
             temperature=temperature,
-            n=num_candidates
+            n=num_candidates,
         )
         # Parse responses.
         for choice in response.get("choices", []):
@@ -26,17 +31,20 @@ def program_Generate(prompt, num_candidates=1, max_tokens=3630, temperature=1):
             if text:
                 print(text)  # Debug/console log
                 results.append(text)  # Full response instead of truncation
-    except openai.error.InvalidRequestError as e:
-        print(f"Invalid request error: {e}")
+        return results
+
+    except openai.BadRequestError as e:
+        print(f"Bad request error: {e}")
         return []
-    except openai.error.OpenAIError as e:
-        print(f"General OpenAI API error: {e}")
+    except openai.APIError as e:
+        print(f"API error: {e}")
+        return []
+    except openai.RateLimitError as e:
+        print(f"Rate limit error: {e}")
         return []
     except Exception as e:
         print(f"Unexpected error: {e}")
         return []
-
-    return results
 
 
 question_prompt = """
@@ -69,29 +77,12 @@ Answer: Implement tiered minting with different price points, maximum supply cap
 Please give requirement guidance for the following functional requirement based on the above form.
 """
 
-# def generate_query_expansion(Behaviour, query, OpenAIKey):
-#     openai.api_key = "OpenAIKey"
-#     # TODO figure out alternative stopping criterion for generating initial characters?
-#     question_prompt1 = question_prompt + query + 'Requirement guidance:'
-#     question_prompt1 = question_prompt1.replace("{{User_Behaviour}}", Behaviour)
-#     expansion = program_Generate(prompt=question_prompt1, temperature=0.3, max_tokens=3800, num_candidates=1, stop='\n')
-#     if not expansion:
-#         return "No expansion generated.", ""
-#     expansion = expansion[0]
-#     if "Requirement guidance:" in query:
-#         query = query + "\nWrite the Functional requirement in detail according to the Requirement guidance and Answer above\nFunctional Requirement:"
-#         expansion1 = program_Generate(prompt=query, num_candidates=1, max_tokens=2500, temperature=0.3)
-#         if not expansion1:
-#             return expansion, ""
-#         expansion1 = expansion1[0]
-#     else:
-#         expansion1 = query.replace("Functional requirement:", "")
 
-#     return expansion, expansion1
-
-def generate_query_expansion(behaviour, query, openai_key, question_prompt_template=None):
+def generate_query_expansion(
+    behaviour, query, openai_key, question_prompt_template=None
+):
     import openai
-    from typing import Tuple, Optional
+    from typing import Optional
 
     def validate_openai_key(key: str) -> bool:
         return bool(key and isinstance(key, str) and len(key.strip()) > 0)
@@ -104,19 +95,20 @@ def generate_query_expansion(behaviour, query, openai_key, question_prompt_templ
     if not validate_openai_key(openai_key):
         raise ValueError("Invalid OpenAI API key provided.")
 
-    openai.api_key = openai_key
+    #    openai.api_key = openai_key
+    openai.api_key = OpenaiKey
 
-    question_prompt = question_prompt_template or "Expand the following query based on user behavior and provide requirement guidance:\n"
+    question_prompt = (
+        question_prompt_template
+        or "Expand the following query based on user behavior and provide requirement guidance:\n"
+    )
 
     question_prompt1 = f"{question_prompt}{query}\nRequirement guidance:"
     question_prompt1 = question_prompt1.replace("{{User_Behaviour}}", behaviour)
 
     try:
         expansion = program_Generate(
-            prompt=question_prompt1,
-            temperature=0.3,
-            max_tokens=3800,
-            num_candidates=1
+            prompt=question_prompt1, temperature=0.3, max_tokens=3800, num_candidates=1
         )
         expansion = safe_extract(expansion)
         if not expansion:
@@ -131,7 +123,7 @@ def generate_query_expansion(behaviour, query, openai_key, question_prompt_templ
                 prompt=functional_req_prompt,
                 num_candidates=1,
                 max_tokens=2500,
-                temperature=0.3
+                temperature=0.3,
             )
             expansion1 = safe_extract(expansion1)
             if not expansion1:
@@ -141,24 +133,21 @@ def generate_query_expansion(behaviour, query, openai_key, question_prompt_templ
 
         return expansion, expansion1
 
-    except openai.error.InvalidRequestError as e:
-        print(f"Invalid request error: {e}")
+    except openai.BadRequestError as e:
+        print(f"Bad request error: {e}")
         return f"Error in query expansion: {e}", ""
-    except openai.error.AuthenticationError as e:
+    except openai.AuthenticationError as e:
         print(f"Authentication error: {e}")
         return "OpenAI API authentication failed.", ""
-    except openai.error.APIConnectionError as e:
+    except openai.APIConnectionError as e:
         print(f"API connection error: {e}")
-        return "Failed to connect to OpenAI API.", ""
-    except openai.error.RateLimitError as e:
+        return "Could not connect to OpenAI API.", ""
+    except openai.RateLimitError as e:
         print(f"Rate limit error: {e}")
         return "OpenAI API rate limit exceeded.", ""
-    except openai.error.ServiceUnavailableError as e:
-        print(f"Service unavailable error: {e}")
-        return "OpenAI API service is currently unavailable.", ""
-    except openai.error.OpenAIError as e:
-        print(f"OpenAI API error: {e}")
-        return f"Unexpected OpenAI API error: {e}", ""
+    except openai.APIError as e:
+        print(f"API error: {e}")
+        return f"OpenAI API error: {e}", ""
     except Exception as e:
-        print(f"Unexpected error: {type(e).__name__}: {e}")
-        return f"An unexpected error occurred: {type(e).__name__}", ""
+        print(f"Unexpected error: {e}")
+        return f"An unexpected error occurred: {e}", ""

@@ -85,7 +85,7 @@ var PythonPromptValues = {}
 var ModelValues = {};
 // upload and save projects
 var ProjectValues = {}
-var OpenAIKey = "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";
+var OpenAIKey = "";  // Will be populated from input field
 var initvariables = []
 // 云端部署时记录第一个接收input数据的变量
 var recordinput = "preInfo"
