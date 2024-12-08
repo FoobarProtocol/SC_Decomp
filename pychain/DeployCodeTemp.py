@@ -3,27 +3,31 @@ import os
 import json
 from flask import jsonify
 
-file_path = os.path.join(os.path.dirname(__file__), 'storage.json')
+# Define paths relative to this module's location
+STORAGE_PATH = os.path.join(os.path.dirname(__file__), "storage.json")
+PROMPT_TEMPLATE_PATH = os.path.join(
+    os.path.dirname(__file__), "pychain/PromptTemplate.json"
+)
 
 
-def read_json():
-    with open(file_path, 'r', encoding='utf-8') as f:
+def read_json(file_path=STORAGE_PATH):
+    with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
 
 
-def write_json(data):
-    with open(file_path, 'w', encoding='utf-8') as f:
+def write_json(data, file_path=STORAGE_PATH):
+    with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
 
 
 def update_request(initrecord, query):
-    initrecord["id"] = query['id']
+    initrecord["id"] = query["id"]
     initrecord["runflag"] = True
     data = read_json()
     has_id = False
     for record in data:
-        if record['id'] == query['id']:
+        if record["id"] == query["id"]:
             has_id = True
             return record
     if not has_id:
@@ -43,14 +47,14 @@ def get_value(vary, request, query):
         return True, query, query[vary]
 
 
-def resetquery(query,initrecord):
-    initrecord["id"] = query['id']
+def resetquery(query, initrecord):
+    initrecord["id"] = query["id"]
     initrecord["runflag"] = True
     query = initrecord
     data = read_json()
     for i in range(len(data)):
         record = data[i]
-        if record['id'] == query['id']:
+        if record["id"] == query["id"]:
             data[i] = query
     write_json(data)
 
@@ -59,21 +63,24 @@ def savequery(query):
     data = read_json()
     for i in range(len(data)):
         record = data[i]
-        if record['id'] == query['id']:
+        if record["id"] == query["id"]:
             data[i] = query
     write_json(data)
 
 
-
-f1 = open("pychain/PromptTemplate.json", "r", encoding='UTF-8')
-prompt_template = json.loads(f1.read())
+prompt_template = read_json(PROMPT_TEMPLATE_PATH)
 
 
 def sapper(sapper_request):
-    chain = sapperchain(sapper_request['OpenaiKey'])
+    chain = sapperchain(sapper_request["OpenaiKey"])
     chain.promptbase(prompt_template)
 
-    {{GenCode}}
+    # Execute GenCode functionality
+    from .GenCode import sapper
+
+    sapper_result = sapper(sapper_request)
+    sapper_query = sapper_result["query"]
+    initrecord = sapper_result["initrecord"]
 
     resetquery(sapper_query, initrecord)
-    return {'Answer': sapper_query["output"]}
+    return {"Answer": sapper_query["output"]}
