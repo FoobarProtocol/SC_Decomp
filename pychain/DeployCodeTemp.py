@@ -6,7 +6,7 @@ from flask import jsonify
 # Define paths relative to this module's location
 STORAGE_PATH = os.path.join(os.path.dirname(__file__), "storage.json")
 PROMPT_TEMPLATE_PATH = os.path.join(
-    os.path.dirname(__file__), "pychain/PromptTemplate.json"
+    os.path.dirname(__file__), "PromptTemplate.json"
 )
 
 
