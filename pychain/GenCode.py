@@ -64,7 +64,7 @@ def savequery(query):
     write_json(data)
 
 
-f1 = open("pychain/PromptTemplate.json", "r", encoding="UTF-8")
+f1 = open("PromptTemplate.json", "r", encoding="UTF-8")
 prompt_template = json.loads(f1.read())
 
 
@@ -149,7 +149,7 @@ def sapper(sapper_request):
                     [history_1, Scene],
                     {
                         "temperature": 0.7,
-                        "max_tokens": 861,
+                        "max_tokens": 512,
                         "stop_strs": "",
                         "top_p": 0.8,
                         "frequency_penalty": 0,
@@ -187,7 +187,7 @@ def sapper(sapper_request):
                         [Question],
                         {
                             "temperature": 0.7,
-                            "max_tokens": 2048,
+                            "max_tokens": 512,
                             "top_p": 1,
                             "frequency_penalty": 0,
                             "presence_penalty": 0,
@@ -203,7 +203,7 @@ def sapper(sapper_request):
                         [Scene, Question, Answer, Standard_Answer],
                         {
                             "temperature": 0.7,
-                            "max_tokens": 2848,
+                            "max_tokens": 512,
                             "top_p": 0.8,
                             "frequency_penalty": 0,
                             "presence_penalty": 0,
@@ -220,7 +220,7 @@ def sapper(sapper_request):
                         [Scene, Question, Answer, Standard_Answer, Evaluation],
                         {
                             "temperature": 0.7,
-                            "max_tokens": 2000,
+                            "max_tokens": 512,
                             "top_p": 1,
                             "frequency_penalty": 0,
                             "presence_penalty": 0,
@@ -231,7 +231,7 @@ def sapper(sapper_request):
                 if sapper_query["runflag"]:
                     sapper_query["output"].append(Score)
             else:
-                chatbot = "Thank you for using Sixiaopin! Good luck in your job search!"
+                chatbot = "Thank you for using the Smart Contract AI Assistant! Good luck with your coding and deployment!"
                 if sapper_query["runflag"]:
                     sapper_query["output"].append(chatbot)
 
@@ -290,7 +290,7 @@ def sapper(sapper_request):
                     [User_2, history_2, Helper],
                     {
                         "temperature": 0.7,
-                        "max_tokens": 1959,
+                        "max_tokens": 512,
                         "stop_strs": "",
                         "top_p": 1,
                         "frequency_penalty": 0,
